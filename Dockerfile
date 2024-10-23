@@ -1,7 +1,8 @@
 FROM node:16-alpine
 
-# Install dependencies
+# Install dependencies termasuk git
 RUN apk add --no-cache \
+    git \
     chromium \
     nss \
     freetype \
@@ -19,7 +20,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install app dependencies
-RUN npm install --production
+RUN npm install --production --legacy-peer-deps
 
 # Bundle app source
 COPY . .
