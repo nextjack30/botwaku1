@@ -19,7 +19,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install app dependencies
-RUN npm install
+RUN npm install --production
 
 # Bundle app source
 COPY . .
@@ -35,4 +35,4 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 EXPOSE 8080
 
 # Start command
-CMD ["node", "index.js"]
+CMD ["npm", "start"]
