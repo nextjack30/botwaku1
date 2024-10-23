@@ -1,39 +1,64 @@
+Saya akan buatkan Dockerfile yang sesuai untuk kode WhatsApp bot Anda. Berikut Dockerfilenya:
 
+```dockerfile
 FROM node:16-alpine
 
-# Buat direktori app
+# Install required dependencies for puppeteer and other native modules
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    python3 \
+    make \
+    g++
+
+# Create app directory
 WORKDIR /usr/src/app
 
-# Copy package.json dan package-lock.json
+# Copy package files
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Bundle app source
+# Copy app source
 COPY . .
 
-# Port yang akan diexpose
+# Create directory for auth files
+RUN mkdir -p auth_info_baileys
+
+# Set environment variables for puppeteer
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+# Expose port (jika diperlukan)
 EXPOSE 8080
 
-# Command untuk menjalankan aplikasi
-ENV NODE_ENV=production
-CMD ["npm", "start"]
+# Start the bot
+CMD ["node", "index.js"]
 ```
 
-Langkah-langkah:
-1. Buat file `Dockerfile` di root repository GitHub Anda
-2. Copy kode di atas ke dalam file tersebut
-3. Commit dan push ke GitHub
-4. Di Back4app:
-   - Pilih repository Anda
-   - Pilih branch yang akan dideploy
-   - Klik deploy
+Dan pastikan di `package.json` Anda memiliki:
 
-Note:
-- Pastikan di `package.json` Anda sudah ada script "start"
-- Jika port aplikasi Anda bukan 8080, sesuaikan bagian `EXPOSE`
-- Menggunakan node:16-alpine untuk image yang lebih ringan
-- Sudah ditambahkan environment production
+```json
 
-Apakah ada yang perlu disesuaikan lagi dengan aplikasi Anda?
+```
+
+Catatan penting:
+1. File `Dockerfile` harus berada di root project
+2. Pastikan semua dependencies tercantum di package.json
+3. Folder `auth_info_baileys` akan dibuat otomatis
+4. Menggunakan node:16-alpine untuk image yang lebih ringan
+5. Sudah termasuk dependencies untuk chromium yang dibutuhkan Baileys
+
+Untuk deploy:
+1. Buat file `Dockerfile` dan copy kode di atas
+2. Push ke GitHub
+3. Di Back4app, pilih repository Anda
+4. Deploy menggunakan Container service
+
+Bot WhatsApp Anda akan berjalan sebagai container di Back4app.
